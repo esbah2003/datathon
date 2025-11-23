@@ -2,6 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 import joblib
 import pandas as pd
+import numpy as np
 
 
 here = Path(__file__).parent
@@ -44,5 +45,25 @@ samples = [
 df = pd.DataFrame(samples)
 preds = pipe.predict(df)
 
+#Example (Maslach Burnout Inventory commonly used thresholds):
+#Low: bottom 25% of scores
+#Moderate: middle 50%
+#High: top 25%
+
+low = np.percentile(preds, 25)
+high = np.percentile(preds, 75)
+
+def risk_category(score):
+    if score < low:
+        return "Low Risk"
+    elif score < high:
+        return "Medium Risk"
+    else:
+        return "High Risk"
+
 for i, p in enumerate(preds):
-    print(f"Sample {i+1} prediction (burnout_risk): {p:.3f}")
+    category = risk_category(p)
+    print(f"Sample {i+1} prediction (burnout_risk): {category} (score: {p:.2f})")
+
+
+
