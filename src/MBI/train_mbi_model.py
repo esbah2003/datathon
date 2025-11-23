@@ -18,7 +18,7 @@ import joblib
 
 # Load data
 here = Path(__file__).parent
-data_path = here / "mbi_burnout_data.csv"
+data_path = here / "MBIdata_expanded.csv"
 
 if not data_path.exists():
     raise SystemExit(
