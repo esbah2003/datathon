@@ -5,28 +5,43 @@ import pandas as pd
 import os
 from pathlib import Path
 import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
-# Configure Gemini AI (you'll need to set your API key as an environment variable)
+# Configure Gemini AI
 try:
-    genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-    model = genai.GenerativeModel('gemini-pro')
+    api_key = os.getenv('GEMINI_API_KEY')
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY not found in environment variables")
+    
+    genai.configure(api_key=api_key)
+    gemini_model = genai.GenerativeModel('gemini-2.5-flash')  # Updated model name
+    print("Gemini AI configured successfully")
 except Exception as e:
     print(f"Warning: Could not configure Gemini AI: {e}")
-    model = None
+    gemini_model = None
 
 # Load the trained model
 model_path = Path(__file__).parent / "src" / "model" / "model.joblib"
+pipeline = None
+feature_names = ["study_hours", "screen_time", "stress_level", "physical_activity", "number_of_courses"]
+
 try:
-    model_data = joblib.load(model_path)
-    pipeline = model_data["pipeline"]
-    feature_names = model_data["feature_names"]
-    print("Model loaded successfully")
+    if model_path.exists():
+        model_data = joblib.load(model_path)
+        pipeline = model_data.get("pipeline")
+        feature_names = model_data.get("feature_names", feature_names)
+        print("Model loaded successfully")
+    else:
+        print("Model file not found, using fallback calculations")
 except Exception as e:
     print(f"Error loading model: {e}")
+    print("Using fallback calculations")
     pipeline = None
-    feature_names = ["study_hours", "screen_time", "stress_level", "physical_activity", "number_of_courses"]
 
 @app.route('/')
 def index():
@@ -143,23 +158,27 @@ def interpret_risk_level(risk):
 
 def generate_suggestions(data, risk_score):
     """Generate personalized suggestions using Gemini AI"""
-    if not model:
+    if not gemini_model:
         return get_fallback_suggestions(data, risk_score)
     
     try:
         prompt = f"""
-        A student has the following lifestyle data:
-        - Study hours per day: {data['study_hours']}
-        - Screen time per day: {data['screen_time']}
-        - Stress level (1-10): {data['stress_level']}
-        - Physical activity hours per day: {data['physical_activity']}
-        - Number of courses: {data['number_of_courses']}
-        - Calculated burnout risk: {risk_score:.3f} (0-1 scale)
+        A student has submitted their lifestyle data for burnout assessment. Please analyze this data and provide personalized recommendations:
 
-        Please provide 3-4 specific, actionable suggestions to help this student reduce their burnout risk and improve their wellbeing. Keep each suggestion concise (1-2 sentences) and practical.
+        STUDENT PROFILE:
+        - Study hours per day: {data['study_hours']} hours
+        - Screen time per day: {data['screen_time']} hours  
+        - Stress level: {data['stress_level']}/10
+        - Physical activity per day: {data['physical_activity']} hours
+        - Number of courses: {data['number_of_courses']} courses
+        
+        BURNOUT ASSESSMENT RESULT:
+        - Calculated burnout risk: {risk_score:.1%} ({risk_score:.3f} on 0-1 scale)
+        
+        Based on this student's specific data and their {risk_score:.1%} burnout risk, please provide 3-4 specific, actionable suggestions to help them improve their wellbeing and reduce burnout risk. Focus on the areas that need the most attention based on their input values and risk level. Keep each suggestion practical and concise (1-2 sentences).
         """
         
-        response = model.generate_content(prompt)
+        response = gemini_model.generate_content(prompt)
         suggestions_text = response.text
         
         # Parse the response into individual suggestions
