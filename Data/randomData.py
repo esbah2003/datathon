@@ -15,9 +15,9 @@ def label_row_noisy(study_hours, screen_time, stress_level, physical_activity):
         w_p * physical_activity +
         base_courses
     )
-    if risk_score >= 15:
+    if risk_score >= 13:
         label = "high"
-    elif risk_score >= 9:
+    elif risk_score >= 6:
         label = "medium"
     else:
         label = "low"
