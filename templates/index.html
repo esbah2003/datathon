@@ -490,7 +490,10 @@
             resultsDiv.innerHTML = `
                 <div class="risk-display">
                     <div class="risk-score" style="color: ${riskLevel.color};">
-                        ${(result.burnout_risk * 100).toFixed(1)}%
+                        ${result.mbi_score}/54
+                    </div>
+                    <div style="font-size: 1rem; color: #666; margin-top: -5px; margin-bottom: 10px;">
+                        MBI Burnout Score (${(result.burnout_risk * 100).toFixed(1)}%)
                     </div>
                     <div class="risk-level" style="color: ${riskLevel.color};">
                         ${riskLevel.level}
