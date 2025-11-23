@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Burnout Assessment Dashboard</title>
+    <title>Student Burnout Assessment</title>
     <style>
         * {
             margin: 0;
@@ -13,624 +13,462 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 25%, #7fcdcd 50%, #81c3d7 75%, #a8c8ec 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             background-attachment: fixed;
             min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(135, 206, 235, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(173, 216, 230, 0.25) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(176, 224, 230, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .main-content {
             padding: 30px;
-            min-height: 100vh;
+        }
+
+        .container {
             max-width: 1200px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
         }
 
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 25px 35px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
         }
 
         .header h1 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin: 0;
-            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .header p {
             color: #64748b;
-        }
-
-        .dashboard {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
+            font-size: 1rem;
         }
 
         .card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            backdrop-filter: blur(10px);
             padding: 30px;
+            border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 30px;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-        }
-
-        .input-section h2 {
-            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
+        .section-title {
+            color: #667eea;
+            font-size: 1.3rem;
             font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-weight: 600;
             color: #374151;
-            font-size: 15px;
+            font-size: 0.95rem;
+        }
+
+        .form-group small {
+            display: block;
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 4px;
         }
 
         .form-group input[type="range"] {
             width: 100%;
             height: 8px;
             border-radius: 50px;
-            background: #e5e7eb;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 var(--value), #e5e7eb var(--value), #e5e7eb 100%);
             outline: none;
             -webkit-appearance: none;
             margin: 10px 0;
         }
 
-        .form-group input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 8px;
-            cursor: pointer;
-            background: #e5e7eb;
-            border-radius: 50px;
-            border: none;
-        }
-
         .form-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #4682b4;
+            background: #667eea;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(70, 130, 180, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
         }
 
-        .form-group input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 4px 12px rgba(70, 130, 180, 0.6);
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
         }
 
-        .form-group input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4682b4;
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
             cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(70, 130, 180, 0.4);
-        }
-
-
-
-        .range-input {
-            position: relative;
-            margin: 15px 0;
         }
 
         .range-value {
-            position: absolute;
-            right: 0;
-            top: -8px;
-            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
+            float: right;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 0.85rem;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(70, 130, 180, 0.3);
         }
 
         .btn {
             width: 100%;
             padding: 18px;
-            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 15px;
-            font-size: 16px;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(70, 130, 180, 0.4);
-            margin-top: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(70, 130, 180, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
         }
 
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 4px 15px rgba(70, 130, 180, 0.2);
         }
 
-        .results-section h2 {
-            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            font-weight: 600;
+        .results {
+            display: none;
         }
 
-        .risk-display {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .risk-score {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .risk-level {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .risk-description {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .stats-grid {
+        .mbi-scores {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .stat-item {
-            background: linear-gradient(135deg, rgba(70, 130, 180, 0.1) 0%, rgba(95, 158, 160, 0.1) 100%);
-            backdrop-filter: blur(10px);
+        .mbi-score-card {
             padding: 20px;
             border-radius: 15px;
             text-align: center;
-            border: 1px solid rgba(70, 130, 180, 0.2);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .stat-item:hover {
-            transform: translateY(-2px);
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
         }
 
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
+        .score-label {
             font-size: 0.9rem;
-            color: #64748b;
-            margin-top: 8px;
+            color: white;
             font-weight: 500;
         }
 
-        .suggestions-section {
-            grid-column: 1 / -1;
-            margin-top: 20px;
-        }
-
-        .suggestions-section h2 {
-            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .suggestion {
-            background: linear-gradient(135deg, rgba(70, 130, 180, 0.1) 0%, rgba(95, 158, 160, 0.1) 100%);
-            backdrop-filter: blur(10px);
-            border-left: 4px solid #4682b4;
-            padding: 18px;
-            margin-bottom: 15px;
-            border-radius: 0 15px 15px 0;
-            border: 1px solid rgba(70, 130, 180, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .suggestion:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(70, 130, 180, 0.2);
-        }
-
-        .loading {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-        }
-
-        .error {
-            background: #ffe6e6;
-            border: 1px solid #ffcdd2;
-            color: #c62828;
+        .risk-factors {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
 
+        .risk-factors h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .risk-factor-item {
+            padding: 8px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .suggestions {
+            margin-top: 20px;
+        }
+
+        .suggestion {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 4px solid #667eea;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .suggestion strong {
+            color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            color: #64748b;
+            padding: 40px;
+        }
+
         @media (max-width: 768px) {
-            .main-content {
-                padding: 20px;
-            }
-            
-            .stats-grid {
+            .mbi-scores {
                 grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Main Content -->
-    <div class="main-content">
+    <div class="container">
         <div class="header">
-            <h1>Student Burnout Assessment Dashboard</h1>
+            <h1>🎓 Student Burnout Assessment</h1>
+            <p>Evidence-based burnout prediction for students based on academic, mental health, and wellbeing factors</p>
         </div>
-        <div class="dashboard">
-            <!-- Input Section -->
-            <div class="card input-section">
-                <h2>📊 Your Wellbeing Profile</h2>
-                <form id="burnoutForm">
-                    <h3 style="color: #4682b4; margin-top: 0; margin-bottom: 15px; font-size: 1.1rem;">Academic & Lifestyle</h3>
-                    
-                    <div class="form-group">
-                        <label for="study_hours">Daily Study Hours</label>
-                        <div class="range-input">
-                            <input type="range" id="study_hours" name="study_hours" min="0" max="16" step="0.1" value="6">
-                            <span class="range-value">6.0</span>
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="screen_time">Daily Screen Time (hours)</label>
-                        <div class="range-input">
-                            <input type="range" id="screen_time" name="screen_time" min="0" max="16" step="0.1" value="5">
-                            <span class="range-value">5.0</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="number_of_courses">Number of Courses</label>
-                        <div class="range-input">
-                            <input type="range" id="number_of_courses" name="number_of_courses" min="1" max="10" step="1" value="4">
-                            <span class="range-value">4</span>
-                        </div>
-                    </div>
-
-                    <h3 style="color: #4682b4; margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem;">Sleep & Rest</h3>
-
-                    <div class="form-group">
-                        <label for="sleep_hours">Average Sleep Hours per Night</label>
-                        <div class="range-input">
-                            <input type="range" id="sleep_hours" name="sleep_hours" min="2" max="12" step="0.5" value="7">
-                            <span class="range-value">7.0</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sleep_quality">Sleep Quality (1=Poor, 4=Excellent)</label>
-                        <div class="range-input">
-                            <input type="range" id="sleep_quality" name="sleep_quality" min="1" max="4" step="1" value="3">
-                            <span class="range-value">3</span>
-                        </div>
-                    </div>
-
-                    <h3 style="color: #4682b4; margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem;">Mental Health & Wellbeing</h3>
-
-                    <div class="form-group">
-                        <label for="stress_level">Current Stress Level (1-10)</label>
-                        <div class="range-input">
-                            <input type="range" id="stress_level" name="stress_level" min="1" max="10" step="1" value="5">
-                            <span class="range-value">5</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="anxiety_score">Anxiety Level (1=None, 10=Severe)</label>
-                        <div class="range-input">
-                            <input type="range" id="anxiety_score" name="anxiety_score" min="1" max="10" step="1" value="5">
-                            <span class="range-value">5</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="depression_score">Depression Level (1=None, 10=Severe)</label>
-                        <div class="range-input">
-                            <input type="range" id="depression_score" name="depression_score" min="1" max="10" step="1" value="5">
-                            <span class="range-value">5</span>
-                        </div>
-                    </div>
-
-                    <h3 style="color: #4682b4; margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem;">Support & Coping</h3>
-
-                    <div class="form-group">
-                        <label for="physical_activity">Weekly Physical Activity (hours)</label>
-                        <div class="range-input">
-                            <input type="range" id="physical_activity" name="physical_activity" min="0" max="20" step="0.5" value="3">
-                            <span class="range-value">3.0</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="coping_strategy_score">Coping Strategies Effectiveness (1=Poor, 10=Excellent)</label>
-                        <div class="range-input">
-                            <input type="range" id="coping_strategy_score" name="coping_strategy_score" min="1" max="10" step="1" value="5">
-                            <span class="range-value">5</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="social_support_score">Social Support Level (1=None, 10=Strong)</label>
-                        <div class="range-input">
-                            <input type="range" id="social_support_score" name="social_support_score" min="1" max="10" step="1" value="5">
-                            <span class="range-value">5</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="academic_self_efficacy">Academic Confidence (1=Low, 10=High)</label>
-                        <div class="range-input">
-                            <input type="range" id="academic_self_efficacy" name="academic_self_efficacy" min="1" max="10" step="1" value="6">
-                            <span class="range-value">6</span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn">Analyze My Burnout Risk</button>
-                </form>
-            </div>
-
-            <!-- Results Section -->
-            <div class="card results-section">
-                <h2>📈 Your Assessment Results</h2>
-                <div id="results">
-                    <p class="loading">Fill out the form and click "Analyze" to see your burnout risk assessment and personalized recommendations.</p>
+        <div class="card">
+            <div class="section-title">📋 Student Profile</div>
+            <form id="burnoutForm">
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" min="18" max="50" value="22" required>
                 </div>
-            </div>
 
-            <!-- Suggestions Section -->
-            <div class="card suggestions-section" id="suggestions" style="display: none;">
-                <h2>💡 Personalized Wellness Recommendations</h2>
-                <div id="suggestionsList"></div>
-            </div>
+                <div class="form-group">
+                    <label for="year">Year of Study</label>
+                    <select id="year" name="year" required>
+                        <option value="1">Year 1 (Freshman)</option>
+                        <option value="2">Year 2 (Sophomore)</option>
+                        <option value="3" selected>Year 3 (Junior)</option>
+                        <option value="4">Year 4 (Senior)</option>
+                        <option value="5">Year 5 (Graduate/Beyond)</option>
+                        <option value="6">Year 6+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sex">Sex</label>
+                    <select id="sex" name="sex" required>
+                        <option value="1">Male</option>
+                        <option value="2" selected>Female</option>
+                        <option value="3">Other/Prefer not to say</option>
+                    </select>
+                </div>
+
+                <div class="section-title">📚 Academic Load</div>
+
+                <div class="form-group">
+                    <label for="stud_h">Study Hours per Week <span class="range-value">20</span></label>
+                    <small>How many hours do you typically study per week?</small>
+                    <input type="range" id="stud_h" name="stud_h" min="0" max="80" step="1" value="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="amsp">Academic Motivation <span class="range-value">20</span></label>
+                    <small>Self-reported academic motivation score (0-35, higher = more motivated)</small>
+                    <input type="range" id="amsp" name="amsp" min="0" max="35" step="1" value="20">
+                </div>
+
+                <div class="section-title">🧠 Mental Health & Wellbeing</div>
+
+                <div class="form-group">
+                    <label for="cesd">Depression Score (CESD) <span class="range-value">15</span></label>
+                    <small>Center for Epidemiologic Studies Depression Scale (0-60, ≥16 indicates clinical concern)</small>
+                    <input type="range" id="cesd" name="cesd" min="0" max="60" step="1" value="15">
+                </div>
+
+                <div class="form-group">
+                    <label for="stai_t">Anxiety Score (STAI-Trait) <span class="range-value">40</span></label>
+                    <small>State-Trait Anxiety Inventory (20-80, ≥55 indicates high anxiety)</small>
+                    <input type="range" id="stai_t" name="stai_t" min="20" max="80" step="1" value="40">
+                </div>
+
+                <div class="form-group">
+                    <label for="psyt">Psychological Distress</label>
+                    <select id="psyt" name="psyt" required>
+                        <option value="0" selected>No significant distress</option>
+                        <option value="1">Experiencing psychological distress</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="health">Self-Reported Health Status</label>
+                    <select id="health" name="health" required>
+                        <option value="1">Very Poor</option>
+                        <option value="2">Poor</option>
+                        <option value="3" selected>Fair</option>
+                        <option value="4">Good</option>
+                        <option value="5">Excellent</option>
+                    </select>
+                </div>
+
+                <div class="section-title">🤝 Professional Qualities</div>
+
+                <div class="form-group">
+                    <label for="qcae_cog">Cognitive Empathy <span class="range-value">55</span></label>
+                    <small>Ability to understand others' perspectives (19-76, higher = better perspective-taking)</small>
+                    <input type="range" id="qcae_cog" name="qcae_cog" min="19" max="76" step="1" value="55">
+                </div>
+
+                <div class="form-group">
+                    <label for="qcae_aff">Affective Empathy <span class="range-value">35</span></label>
+                    <small>Emotional response to others' feelings (13-52, higher = stronger emotional connection)</small>
+                    <input type="range" id="qcae_aff" name="qcae_aff" min="13" max="52" step="1" value="35">
+                </div>
+
+                <div class="form-group">
+                    <label for="jspe">Professional Engagement <span class="range-value">100</span></label>
+                    <small>Overall engagement with professional/academic development (20-140, higher = stronger commitment)</small>
+                    <input type="range" id="jspe" name="jspe" min="20" max="140" step="1" value="100">
+                </div>
+
+                <button type="submit" class="btn">🔍 Analyze Burnout Risk</button>
+            </form>
         </div>
-        
+
+        <div class="card results" id="results">
+            <div class="section-title">📊 Your Burnout Assessment Results</div>
+            <div id="resultsContent"></div>
+        </div>
     </div>
 
     <script>
-        // Update range values in real-time and slider fill
+        // Update range values in real-time
         document.querySelectorAll('input[type="range"]').forEach(input => {
-            const valueSpan = input.nextElementSibling;
+            const valueSpan = input.parentElement.querySelector('.range-value');
             
-            // Function to update slider fill
-            function updateSliderFill() {
-                const value = parseFloat(input.value);
-                const min = parseFloat(input.min);
-                const max = parseFloat(input.max);
-                const percentage = ((value - min) / (max - min)) * 100;
+            function updateValue() {
+                const value = input.value;
+                valueSpan.textContent = value;
                 
-                input.style.background = `linear-gradient(to right, #4682b4 0%, #5f9ea0 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`;
-                valueSpan.textContent = input.step === '1' ? value.toString() : value.toFixed(1);
+                // Update slider gradient
+                const percentage = ((value - input.min) / (input.max - input.min)) * 100;
+                input.style.setProperty('--value', percentage + '%');
             }
             
-            // Initial fill
-            updateSliderFill();
-            
-            input.addEventListener('input', updateSliderFill);
+            updateValue();
+            input.addEventListener('input', updateValue);
         });
 
-        // Handle form submission
+        // Form submission
         document.getElementById('burnoutForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
             
-            // Show loading state
             const resultsDiv = document.getElementById('results');
-            const suggestionsDiv = document.getElementById('suggestions');
+            const resultsContent = document.getElementById('resultsContent');
             const submitBtn = document.querySelector('.btn');
             
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Analyzing...';
-            resultsDiv.innerHTML = '<p class="loading">Analyzing your data and generating personalized recommendations...</p>';
-            suggestionsDiv.style.display = 'none';
+            submitBtn.textContent = '⏳ Analyzing...';
+            resultsDiv.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">Analyzing your data...</div>';
             
             try {
                 const response = await fetch('/predict', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
                 
                 const result = await response.json();
                 
                 if (result.success) {
-                    displayResults(result, data);
-                    displaySuggestions(result.suggestions);
+                    displayResults(result);
                 } else {
                     throw new Error(result.error || 'Analysis failed');
                 }
-                
             } catch (error) {
-                resultsDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                resultsContent.innerHTML = `<div style="color: red; padding: 20px;">Error: ${error.message}</div>`;
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Analyze My Burnout Risk';
+                submitBtn.textContent = '🔍 Analyze Burnout Risk';
             }
         });
 
-        function displayResults(result, inputData) {
-            const resultsDiv = document.getElementById('results');
-            const riskLevel = result.risk_level;
-
-            // Map sleep quality numeric to text
-            const sleepQualityMap = { '1': 'Poor', '2': 'Fair', '3': 'Good', '4': 'Excellent' };
-            const sleepQualityText = sleepQualityMap[inputData.sleep_quality] || inputData.sleep_quality;
-
-            resultsDiv.innerHTML = `
-                <div class="risk-display">
-                    <div class="risk-score" style="color: ${riskLevel.color};">
-                        ${result.mbi_score}/54
+        function displayResults(result) {
+            const { mbi_ex, mbi_cy, mbi_ea, risk_levels, high_risk_factors, suggestions } = result;
+            
+            let html = `
+                <div class="mbi-scores">
+                    <div class="mbi-score-card" style="background: ${risk_levels.exhaustion.color};">
+                        <div class="score-label">EXHAUSTION</div>
+                        <div class="score-value">${mbi_ex}/30</div>
+                        <div class="score-label">${risk_levels.exhaustion.level} Risk</div>
                     </div>
-                    <div style="font-size: 1rem; color: #666; margin-top: -5px; margin-bottom: 10px;">
-                        MBI Burnout Score (${(result.burnout_risk * 100).toFixed(1)}%)
+                    <div class="mbi-score-card" style="background: ${risk_levels.cynicism.color};">
+                        <div class="score-label">CYNICISM</div>
+                        <div class="score-value">${mbi_cy}/30</div>
+                        <div class="score-label">${risk_levels.cynicism.level} Risk</div>
                     </div>
-                    <div class="risk-level" style="color: ${riskLevel.color};">
-                        ${riskLevel.level}
-                    </div>
-                    <div class="risk-description">
-                        ${riskLevel.description}
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.study_hours}</div>
-                        <div class="stat-label">Study Hours / Day</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.screen_time}</div>
-                        <div class="stat-label">Screen Time / Day</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.number_of_courses}</div>
-                        <div class="stat-label">Courses</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.sleep_hours}</div>
-                        <div class="stat-label">Sleep Hours / Night</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${sleepQualityText}</div>
-                        <div class="stat-label">Sleep Quality</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.stress_level}/10</div>
-                        <div class="stat-label">Stress</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.anxiety_score}/10</div>
-                        <div class="stat-label">Anxiety</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.depression_score}/10</div>
-                        <div class="stat-label">Depression</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.physical_activity}</div>
-                        <div class="stat-label">Activity Hrs / Week</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.coping_strategy_score}/10</div>
-                        <div class="stat-label">Coping</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.social_support_score}/10</div>
-                        <div class="stat-label">Support</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${inputData.academic_self_efficacy}/10</div>
-                        <div class="stat-label">Self-Efficacy</div>
+                    <div class="mbi-score-card" style="background: ${risk_levels.efficacy.color};">
+                        <div class="score-label">PROFESSIONAL EFFICACY</div>
+                        <div class="score-value">${mbi_ea}/36</div>
+                        <div class="score-label">${risk_levels.efficacy.level}</div>
                     </div>
                 </div>
             `;
-        }
-
-        function displaySuggestions(suggestions) {
-            const suggestionsDiv = document.getElementById('suggestions');
-            const suggestionsList = document.getElementById('suggestionsList');
             
-            if (suggestions && suggestions.length > 0) {
-                suggestionsList.innerHTML = suggestions.map(suggestion => 
-                    `<div class="suggestion">${suggestion}</div>`
-                ).join('');
-                suggestionsDiv.style.display = 'block';
+            if (high_risk_factors && high_risk_factors.length > 0) {
+                html += `
+                    <div class="risk-factors">
+                        <h3>⚠️ High-Risk Factors Detected</h3>
+                        ${high_risk_factors.map(f => `
+                            <div class="risk-factor-item">
+                                <strong>${f.factor}:</strong> ${f.severity} 
+                                (Value: ${f.value}, Threshold: ${f.threshold})
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             }
+            
+            html += `
+                <div class="suggestions">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">💡 Personalized Recommendations</h3>
+                    ${suggestions.map(s => `<div class="suggestion">${s}</div>`).join('')}
+                </div>
+            `;
+            
+            document.getElementById('resultsContent').innerHTML = html;
         }
     </script>
+    <footer style="background:rgba(245,245,255,0.97);border-top:1px solid #cfe2f3;padding:24px 32px;font-size:13px;color:#374151;border-radius:0 0 18px 18px;box-shadow:0 -8px 24px rgba(70,130,180,0.07);margin-top:40px;">
+    <h4 style="color:#4682b4;font-size:1.12rem;margin-bottom:12px;">References & Data Sources</h4>
+    <ol style="margin-left:18px;">
+        <li>Schaufeli WB, Martínez IM, Pinto AM, Salanova M, Bakker AB. Burnout and Engagement in University Students: A Cross-National Study. <em>Journal of Cross-Cultural Psychology</em> 2002;33(5):464-481.</li>
+        <li>Radloff LS. The CES-D Scale: A Self-Report Depression Scale for Research in the General Population. <em>Applied Psychological Measurement</em> 1977;1(3):385-401.</li>
+        <li>Spielberger CD, et al. Manual for the State-Trait Anxiety Inventory (Form Y). Consulting Psychologists Press, 1983.</li>
+        <li>Davis MH. Measuring individual differences in empathy: Evidence for a multidimensional approach. <em>Journal of Personality and Social Psychology</em> 1983;44(1):113–126.</li>
+        <li>Salanova M, Schaufeli WB, Martínez IM, Bresó E. How obstacles and facilitators predict academic performance: The mediating role of study burnout and engagement. <em>Anxiety, Stress, & Coping</em> 2010;23(1):53-70.</li>
+        <li>Medical Student Mental Health Dataset. Kaggle. <a href="https://www.kaggle.com/datasets/thedevastator/medical-student-mental-health" target="_blank" rel="noopener" style="color:#248fb2;">Link</a></li>
+        <li>Kim MJ, Lee SY, Lee S. Sleep, exercise, and self-care as protective factors for academic burnout: Review of interventions in student populations. <em>Journal of American College Health</em> 2024;72(2):151–160.</li>
+        <li>Maslach C, Leiter MP. Understanding the burnout experience: Recent research and its implications for psychiatry. <em>World Psychiatry</em> 2016;15(2):103-111.</li>
+    </ol>
+</footer>
+
 </body>
 </html>
