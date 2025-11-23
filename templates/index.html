@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Burnout Assessment Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .main-content {
+            padding: 30px;
+            min-height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #64748b;
+        }
+
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .input-section h2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 15px;
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 50px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+            margin: 10px 0;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 50px;
+            border: none;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+        }
+
+        .form-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+        }
+
+
+
+        .range-input {
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .range-value {
+            position: absolute;
+            right: 0;
+            top: -8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .results-section h2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .risk-display {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .risk-score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .risk-level {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .risk-description {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .suggestions-section {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .suggestions-section h2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .suggestion {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            backdrop-filter: blur(10px);
+            border-left: 4px solid #667eea;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-radius: 0 15px 15px 0;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .suggestion:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error {
+            background: #ffe6e6;
+            border: 1px solid #ffcdd2;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Student Burnout Assessment Dashboard</h1>
+            <div class="user-info">
+                <span>👤 Admin</span>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <!-- Input Section -->
+            <div class="card input-section">
+                <h2>📊 Your Study Profile</h2>
+                <form id="burnoutForm">
+                    <div class="form-group">
+                        <label for="study_hours">Daily Study Hours</label>
+                        <div class="range-input">
+                            <input type="range" id="study_hours" name="study_hours" min="0" max="16" step="0.1" value="6">
+                            <span class="range-value">6.0</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="screen_time">Daily Screen Time (hours)</label>
+                        <div class="range-input">
+                            <input type="range" id="screen_time" name="screen_time" min="0" max="16" step="0.1" value="5">
+                            <span class="range-value">5.0</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stress_level">Stress Level (1-10)</label>
+                        <div class="range-input">
+                            <input type="range" id="stress_level" name="stress_level" min="1" max="10" step="1" value="5">
+                            <span class="range-value">5</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="physical_activity">Daily Physical Activity (hours)</label>
+                        <div class="range-input">
+                            <input type="range" id="physical_activity" name="physical_activity" min="0" max="8" step="0.1" value="1">
+                            <span class="range-value">1.0</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="number_of_courses">Number of Courses</label>
+                        <div class="range-input">
+                            <input type="range" id="number_of_courses" name="number_of_courses" min="1" max="10" step="1" value="4">
+                            <span class="range-value">4</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Analyze My Burnout Risk</button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="card results-section">
+                <h2>📈 Your Assessment Results</h2>
+                <div id="results">
+                    <p class="loading">Fill out the form and click "Analyze" to see your burnout risk assessment and personalized recommendations.</p>
+                </div>
+            </div>
+
+            <!-- Suggestions Section -->
+            <div class="card suggestions-section" id="suggestions" style="display: none;">
+                <h2>💡 Personalized Wellness Recommendations</h2>
+                <div id="suggestionsList"></div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // Update range values in real-time and slider fill
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            const valueSpan = input.nextElementSibling;
+            
+            // Function to update slider fill
+            function updateSliderFill() {
+                const value = parseFloat(input.value);
+                const min = parseFloat(input.min);
+                const max = parseFloat(input.max);
+                const percentage = ((value - min) / (max - min)) * 100;
+                
+                input.style.background = `linear-gradient(to right, #667eea 0%, #764ba2 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`;
+                valueSpan.textContent = input.step === '1' ? value.toString() : value.toFixed(1);
+            }
+            
+            // Initial fill
+            updateSliderFill();
+            
+            input.addEventListener('input', updateSliderFill);
+        });
+
+        // Handle form submission
+        document.getElementById('burnoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Show loading state
+            const resultsDiv = document.getElementById('results');
+            const suggestionsDiv = document.getElementById('suggestions');
+            const submitBtn = document.querySelector('.btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Analyzing...';
+            resultsDiv.innerHTML = '<p class="loading">Analyzing your data and generating personalized recommendations...</p>';
+            suggestionsDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result, data);
+                    displaySuggestions(result.suggestions);
+                } else {
+                    throw new Error(result.error || 'Analysis failed');
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Analyze My Burnout Risk';
+            }
+        });
+
+        function displayResults(result, inputData) {
+            const resultsDiv = document.getElementById('results');
+            const riskLevel = result.risk_level;
+            
+            resultsDiv.innerHTML = `
+                <div class="risk-display">
+                    <div class="risk-score" style="color: ${riskLevel.color};">
+                        ${(result.burnout_risk * 100).toFixed(1)}%
+                    </div>
+                    <div class="risk-level" style="color: ${riskLevel.color};">
+                        ${riskLevel.level}
+                    </div>
+                    <div class="risk-description">
+                        ${riskLevel.description}
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.study_hours}</div>
+                        <div class="stat-label">Study Hours/Day</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.screen_time}</div>
+                        <div class="stat-label">Screen Hours/Day</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.stress_level}/10</div>
+                        <div class="stat-label">Stress Level</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.physical_activity}</div>
+                        <div class="stat-label">Activity Hours/Day</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displaySuggestions(suggestions) {
+            const suggestionsDiv = document.getElementById('suggestions');
+            const suggestionsList = document.getElementById('suggestionsList');
+            
+            if (suggestions && suggestions.length > 0) {
+                suggestionsList.innerHTML = suggestions.map(suggestion => 
+                    `<div class="suggestion">${suggestion}</div>`
+                ).join('');
+                suggestionsDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,54 +1,58 @@
-# Datathon - Burnout Risk Model
+# Student Burnout Assessment Dashboard
 
-Small project to generate synthetic student burnout data, train a regression model, and quickly test predictions.
+ML-powered web app for predicting student burnout risk with personalized wellness recommendations.
 
+## Quick Start
 
-## set up environment
-mac
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+# Setup
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-Windows:
-```bat
-py -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
-```
+# Optional: Configure Gemini AI
+cp .env.example .env
+# Add your GEMINI_API_KEY to .env
 
-## Generate training data
-This creates a CSV of fake burnout scores.
-
-```bash
-python src/mock_data/generate_burnout_data.py
-```
-
-The script writes `burnout_data_scores.csv` in your cwd. Copy it into the model folder so the training script can find it:
-
-mac
-```bash
-cp burnout_data_scores.csv src/model/burnout_data_scores.csv
-```
-
-Windows:
-```bat
-copy burnout_data_scores.csv src\model\burnout_data_scores.csv
-```
-
-## Train the model
-Trains randomForest regressor and saves the pipeline.
-
-```bash
+# Train model and run
 python src/model/train.py
+python app.py
 ```
 
-Output: `src/model/model.joblib` plus validation metrics in the console.
+Open http://localhost:5000
 
-
-## Runs a few sample inputs through the saved pipeline.
+## Development
 
 ```bash
+# Generate synthetic training data
+python src/mock_data/generate_burnout_data.py
+cp burnout_data_scores.csv src/model/
+
+# Train model
+python src/model/train.py
+
+# Test predictions
 python src/mock_data/test.py
+```
+
+## Tech Stack
+
+Flask, scikit-learn, Gemini AI, vanilla JS
+
+## Model
+
+Random Forest Regression on 5 features:
+- Study hours, screen time, stress level (1-10)  
+- Physical activity hours, number of courses
+- Output: Burnout risk score (0-1)
+
+Performance: R² = 0.8944, MAE = 0.076
+
+## Structure
+
+```
+app.py              # Flask backend
+templates/index.html # Frontend dashboard  
+src/model/train.py   # ML training
+src/mock_data/       # Data generation
 ```
