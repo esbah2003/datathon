@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-# Set random seed for reproducibility
-np.random.seed(42)
+# random seed for reproducablitiy
+np.random.seed(67)
 
 # Initialize lists to store data
 data = {
@@ -14,7 +14,7 @@ data = {
     'burnout_risk': []
 }
 
-# Generate 100 rows for each burnout risk level (0.1 to 1.0)
+# Generate 100 rows for each burnout risk level (0.1-1.0). 
 for burnout_score in np.arange(0.1, 1.1, 0.1):
     burnout_score = round(burnout_score, 1)  # Ensure clean decimal values
     
@@ -60,7 +60,7 @@ for burnout_score in np.arange(0.1, 1.1, 0.1):
 df = pd.DataFrame(data)
 
 # Shuffle the rows to mix burnout levels
-df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+df = df.sample(frac=1, random_state=67).reset_index(drop=True)
 
 # Save to CSV
 output_file = 'burnout_data_scores.csv'
