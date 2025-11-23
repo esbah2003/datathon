@@ -1,0 +1,48 @@
+from __future__ import annotations
+from pathlib import Path
+import joblib
+import pandas as pd
+
+
+here = Path(__file__).parent
+model_path = here / "model.joblib"
+
+if not model_path.exists():
+    raise SystemExit("Model file not found. Run main.py to train and save the model first.")
+
+bundle = joblib.load(model_path)
+pipe = bundle["pipeline"]
+
+# sample inputs
+samples = [
+    # Heavier workload, high stress, low activity: higher risk expected
+    {
+        "study_hours": 10.5,
+        "screen_time": 9.0,
+        "stress_level": 9,
+        "physical_activity": 2.0,
+        "number_of_courses": 7,
+    },
+    # Moderate workload, moderate stress, good activity: moderate risk
+    {
+        "study_hours": 6.0,
+        "screen_time": 6.0,
+        "stress_level": 6,
+        "physical_activity": 7.0,
+        "number_of_courses": 5,
+    },
+    # Light workload, low stress, high activity: low risk
+    {
+        "study_hours": 2.0,
+        "screen_time": 2.0,
+        "stress_level": 2,
+        "physical_activity": 12.0,
+        "number_of_courses": 2,
+    },
+]
+
+df = pd.DataFrame(samples)
+preds = pipe.predict(df)
+
+for i, p in enumerate(preds):
+    print(f"Sample {i+1} prediction (burnout_risk): {p:.3f}")
