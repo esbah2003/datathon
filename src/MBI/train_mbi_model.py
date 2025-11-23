@@ -35,10 +35,17 @@ print(f"\nLoaded {len(df)} samples from {data_path.name}")
 # features and target
 feature_cols = [
     "study_hours",
-    "screen_time", 
+    "screen_time",
     "stress_level",
     "physical_activity",
-    "number_of_courses"
+    "number_of_courses",
+    "sleep_hours",
+    "sleep_quality",
+    "anxiety_score",
+    "depression_score",
+    "coping_strategy_score",
+    "social_support_score",
+    "academic_self_efficacy"
 ]
 
 X = df[feature_cols]
@@ -52,11 +59,17 @@ X_train, X_test, y_train, y_test = train_test_split(
 print(f"\nTraining set: {len(X_train)} samples")
 print(f"Test set: {len(X_test)} samples")
 
-pipe = Pipeline([("scaler", StandardScaler()),("regressor", RandomForestRegressor(
-        n_estimators=100,
-        max_depth=10,
+pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("regressor", RandomForestRegressor(
+        n_estimators=200,  # Increased for more features
+        max_depth=15,      # Deeper trees for complex interactions
+        min_samples_split=5,
+        min_samples_leaf=2,
         random_state=42,
-        n_jobs=-1))])
+        n_jobs=-1
+    ))
+])
 
 pipe.fit(X_train, y_train)
 

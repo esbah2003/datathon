@@ -246,7 +246,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -347,16 +347,14 @@
     <div class="main-content">
         <div class="header">
             <h1>Student Burnout Assessment Dashboard</h1>
-            <div class="user-info">
-                <span>👤 Admin</span>
-            </div>
         </div>
-
         <div class="dashboard">
             <!-- Input Section -->
             <div class="card input-section">
-                <h2>📊 Your Study Profile</h2>
+                <h2>📊 Your Wellbeing Profile</h2>
                 <form id="burnoutForm">
+                    <h3 style="color: #4682b4; margin-top: 0; margin-bottom: 15px; font-size: 1.1rem;">Academic & Lifestyle</h3>
+                    
                     <div class="form-group">
                         <label for="study_hours">Daily Study Hours</label>
                         <div class="range-input">
@@ -374,7 +372,35 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="stress_level">Stress Level (1-10)</label>
+                        <label for="number_of_courses">Number of Courses</label>
+                        <div class="range-input">
+                            <input type="range" id="number_of_courses" name="number_of_courses" min="1" max="10" step="1" value="4">
+                            <span class="range-value">4</span>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #4682b4; margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem;">Sleep & Rest</h3>
+
+                    <div class="form-group">
+                        <label for="sleep_hours">Average Sleep Hours per Night</label>
+                        <div class="range-input">
+                            <input type="range" id="sleep_hours" name="sleep_hours" min="2" max="12" step="0.5" value="7">
+                            <span class="range-value">7.0</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sleep_quality">Sleep Quality (1=Poor, 4=Excellent)</label>
+                        <div class="range-input">
+                            <input type="range" id="sleep_quality" name="sleep_quality" min="1" max="4" step="1" value="3">
+                            <span class="range-value">3</span>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #4682b4; margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem;">Mental Health & Wellbeing</h3>
+
+                    <div class="form-group">
+                        <label for="stress_level">Current Stress Level (1-10)</label>
                         <div class="range-input">
                             <input type="range" id="stress_level" name="stress_level" min="1" max="10" step="1" value="5">
                             <span class="range-value">5</span>
@@ -382,18 +408,52 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="physical_activity">Daily Physical Activity (hours)</label>
+                        <label for="anxiety_score">Anxiety Level (1=None, 10=Severe)</label>
                         <div class="range-input">
-                            <input type="range" id="physical_activity" name="physical_activity" min="0" max="8" step="0.1" value="1">
-                            <span class="range-value">1.0</span>
+                            <input type="range" id="anxiety_score" name="anxiety_score" min="1" max="10" step="1" value="5">
+                            <span class="range-value">5</span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="number_of_courses">Number of Courses</label>
+                        <label for="depression_score">Depression Level (1=None, 10=Severe)</label>
                         <div class="range-input">
-                            <input type="range" id="number_of_courses" name="number_of_courses" min="1" max="10" step="1" value="4">
-                            <span class="range-value">4</span>
+                            <input type="range" id="depression_score" name="depression_score" min="1" max="10" step="1" value="5">
+                            <span class="range-value">5</span>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #4682b4; margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem;">Support & Coping</h3>
+
+                    <div class="form-group">
+                        <label for="physical_activity">Weekly Physical Activity (hours)</label>
+                        <div class="range-input">
+                            <input type="range" id="physical_activity" name="physical_activity" min="0" max="20" step="0.5" value="3">
+                            <span class="range-value">3.0</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="coping_strategy_score">Coping Strategies Effectiveness (1=Poor, 10=Excellent)</label>
+                        <div class="range-input">
+                            <input type="range" id="coping_strategy_score" name="coping_strategy_score" min="1" max="10" step="1" value="5">
+                            <span class="range-value">5</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="social_support_score">Social Support Level (1=None, 10=Strong)</label>
+                        <div class="range-input">
+                            <input type="range" id="social_support_score" name="social_support_score" min="1" max="10" step="1" value="5">
+                            <span class="range-value">5</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="academic_self_efficacy">Academic Confidence (1=Low, 10=High)</label>
+                        <div class="range-input">
+                            <input type="range" id="academic_self_efficacy" name="academic_self_efficacy" min="1" max="10" step="1" value="6">
+                            <span class="range-value">6</span>
                         </div>
                     </div>
 
@@ -486,7 +546,11 @@
         function displayResults(result, inputData) {
             const resultsDiv = document.getElementById('results');
             const riskLevel = result.risk_level;
-            
+
+            // Map sleep quality numeric to text
+            const sleepQualityMap = { '1': 'Poor', '2': 'Fair', '3': 'Good', '4': 'Excellent' };
+            const sleepQualityText = sleepQualityMap[inputData.sleep_quality] || inputData.sleep_quality;
+
             resultsDiv.innerHTML = `
                 <div class="risk-display">
                     <div class="risk-score" style="color: ${riskLevel.color};">
@@ -502,23 +566,55 @@
                         ${riskLevel.description}
                     </div>
                 </div>
-                
+
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value">${inputData.study_hours}</div>
-                        <div class="stat-label">Study Hours/Day</div>
+                        <div class="stat-label">Study Hours / Day</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value">${inputData.screen_time}</div>
-                        <div class="stat-label">Screen Hours/Day</div>
+                        <div class="stat-label">Screen Time / Day</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.number_of_courses}</div>
+                        <div class="stat-label">Courses</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.sleep_hours}</div>
+                        <div class="stat-label">Sleep Hours / Night</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${sleepQualityText}</div>
+                        <div class="stat-label">Sleep Quality</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value">${inputData.stress_level}/10</div>
-                        <div class="stat-label">Stress Level</div>
+                        <div class="stat-label">Stress</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.anxiety_score}/10</div>
+                        <div class="stat-label">Anxiety</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.depression_score}/10</div>
+                        <div class="stat-label">Depression</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value">${inputData.physical_activity}</div>
-                        <div class="stat-label">Activity Hours/Day</div>
+                        <div class="stat-label">Activity Hrs / Week</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.coping_strategy_score}/10</div>
+                        <div class="stat-label">Coping</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.social_support_score}/10</div>
+                        <div class="stat-label">Support</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${inputData.academic_self_efficacy}/10</div>
+                        <div class="stat-label">Self-Efficacy</div>
                     </div>
                 </div>
             `;

@@ -37,52 +37,87 @@ print(f"  R² Score: {bundle['metrics']['r2']:.4f}")
 print(f"  Category Accuracy: {bundle['metrics']['category_accuracy']:.1%}")
 print("-" * 70)
 
-# Define test samples
+# Define test samples with all 12 features
 samples = [
     {
-        "name": "High-Risk Student",
-        "description": "Heavy workload, high stress, minimal activity",
+        "name": "High-Risk Student (Severe Burnout)",
+        "description": "Heavy workload, poor sleep, high anxiety/depression, minimal support",
         "study_hours": 10.5,
         "screen_time": 9.0,
         "stress_level": 9,
         "physical_activity": 2.0,
         "number_of_courses": 7,
+        "sleep_hours": 5.0,
+        "sleep_quality": 1,
+        "anxiety_score": 9,
+        "depression_score": 8,
+        "coping_strategy_score": 3,
+        "social_support_score": 2,
+        "academic_self_efficacy": 3,
     },
     {
         "name": "Moderate-Risk Student",
-        "description": "Balanced workload, moderate stress, some activity",
+        "description": "Balanced workload, moderate stress, average support",
         "study_hours": 6.0,
         "screen_time": 6.0,
         "stress_level": 6,
         "physical_activity": 7.0,
         "number_of_courses": 5,
+        "sleep_hours": 7.0,
+        "sleep_quality": 3,
+        "anxiety_score": 5,
+        "depression_score": 5,
+        "coping_strategy_score": 6,
+        "social_support_score": 6,
+        "academic_self_efficacy": 6,
     },
     {
-        "name": "Low-Risk Student",
-        "description": "Light workload, low stress, high activity",
-        "study_hours": 2.0,
-        "screen_time": 2.0,
+        "name": "Low-Risk Student (Thriving)",
+        "description": "Light workload, good sleep, low stress, strong support",
+        "study_hours": 4.0,
+        "screen_time": 3.0,
         "stress_level": 2,
         "physical_activity": 12.0,
-        "number_of_courses": 2,
+        "number_of_courses": 3,
+        "sleep_hours": 8.5,
+        "sleep_quality": 4,
+        "anxiety_score": 2,
+        "depression_score": 1,
+        "coping_strategy_score": 9,
+        "social_support_score": 9,
+        "academic_self_efficacy": 8,
     },
     {
-        "name": "Medical Student",
-        "description": "Extreme workload with high stress",
+        "name": "Medical Student (Extreme Workload)",
+        "description": "Extreme workload, poor sleep, high mental health symptoms",
         "study_hours": 12.0,
         "screen_time": 10.0,
         "stress_level": 10,
         "physical_activity": 1.0,
         "number_of_courses": 8,
+        "sleep_hours": 4.5,
+        "sleep_quality": 1,
+        "anxiety_score": 10,
+        "depression_score": 9,
+        "coping_strategy_score": 4,
+        "social_support_score": 5,
+        "academic_self_efficacy": 5,
     },
     {
-        "name": "Part-Time Student",
-        "description": "Minimal course load, good balance",
-        "study_hours": 3.0,
-        "screen_time": 4.0,
-        "stress_level": 3,
+        "name": "Well-Supported Student",
+        "description": "Moderate workload but excellent support systems",
+        "study_hours": 7.0,
+        "screen_time": 5.0,
+        "stress_level": 5,
         "physical_activity": 10.0,
-        "number_of_courses": 3,
+        "number_of_courses": 5,
+        "sleep_hours": 8.0,
+        "sleep_quality": 3,
+        "anxiety_score": 4,
+        "depression_score": 3,
+        "coping_strategy_score": 8,
+        "social_support_score": 9,
+        "academic_self_efficacy": 8,
     },
 ]
 
@@ -103,6 +138,13 @@ for sample in samples:
         "stress_level": sample["stress_level"],
         "physical_activity": sample["physical_activity"],
         "number_of_courses": sample["number_of_courses"],
+        "sleep_hours": sample["sleep_hours"],
+        "sleep_quality": sample["sleep_quality"],
+        "anxiety_score": sample["anxiety_score"],
+        "depression_score": sample["depression_score"],
+        "coping_strategy_score": sample["coping_strategy_score"],
+        "social_support_score": sample["social_support_score"],
+        "academic_self_efficacy": sample["academic_self_efficacy"],
     })
 
 df = pd.DataFrame(feature_data)
@@ -120,22 +162,33 @@ for i, (sample, score) in enumerate(zip(samples, predictions)):
     print(f"\n{i+1}. {sample['name']}")
     print(f"   {sample['description']}")
     print(f"   ─────────────────────────────────────────────")
-    print(f"   Study Hours:\t{sample['study_hours']:.1f} hrs/day")
-    print(f"   Screen Time:\t{sample['screen_time']:.1f} hrs/day")
-    print(f"   Stress Level:\t{sample['stress_level']}/10")
-    print(f"   Physical Activity:\t{sample['physical_activity']:.1f} hrs/week")
-    print(f"   Number of Courses:\t{sample['number_of_courses']}")
+    print(f"   📚 Academic & Lifestyle:")
+    print(f"      Study Hours: {sample['study_hours']:.1f} hrs/day")
+    print(f"      Screen Time: {sample['screen_time']:.1f} hrs/day")
+    print(f"      Courses: {sample['number_of_courses']}")
+    print(f"   💤 Sleep & Rest:")
+    print(f"      Sleep Hours: {sample['sleep_hours']:.1f} hrs/night")
+    print(f"      Sleep Quality: {sample['sleep_quality']}/4")
+    print(f"   🧠 Mental Health:")
+    print(f"      Stress: {sample['stress_level']}/10")
+    print(f"      Anxiety: {sample['anxiety_score']}/10")
+    print(f"      Depression: {sample['depression_score']}/10")
+    print(f"   🤝 Support & Coping:")
+    print(f"      Physical Activity: {sample['physical_activity']:.1f} hrs/week")
+    print(f"      Coping Strategies: {sample['coping_strategy_score']}/10")
+    print(f"      Social Support: {sample['social_support_score']}/10")
+    print(f"      Academic Confidence: {sample['academic_self_efficacy']}/10")
     print(f"   ─────────────────────────────────────────────")
-    print(f"   MBI Score:\t{score:.1f} / 54")
-    print(f"   Risk Category:\t{category}")
+    print(f"   🎯 MBI Score:\t{score:.1f} / 54")
+    print(f"   📊 Risk Category:\t{category}")
     
-    # Add interpretation (replace with gemini)
+    # Add interpretation
     if category == "Low Risk":
-        print(f"   Interpretation: Healthy balance, low burnout symptoms")
+        print(f"   ✅ Interpretation: Healthy balance, low burnout symptoms")
     elif category == "Moderate Risk":
-        print(f"   Interpretation: Some burnout symptoms, monitor closely")
+        print(f"   ⚠️  Interpretation: Some burnout symptoms, monitor closely")
     else:
-        print(f"   Interpretation: High burnout risk, intervention recommended")
+        print(f"   🚨 Interpretation: High burnout risk, intervention recommended")
 
 print("\n" + "-" * 70)
 print("NOTE: MBI scores are based on validated Maslach Burnout Inventory thresholds")

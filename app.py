@@ -28,7 +28,20 @@ except Exception as e:
 # Load the MBI trained model
 model_path = Path(__file__).parent / "src" / "MBI" / "mbi_model.joblib"
 pipeline = None
-feature_cols = ["study_hours", "screen_time", "stress_level", "physical_activity", "number_of_courses"]
+feature_cols = [
+    "study_hours",
+    "screen_time",
+    "stress_level",
+    "physical_activity",
+    "number_of_courses",
+    "sleep_hours",
+    "sleep_quality",
+    "anxiety_score",
+    "depression_score",
+    "coping_strategy_score",
+    "social_support_score",
+    "academic_self_efficacy"
+]
 mbi_thresholds = {
     "low": 16,
     "moderate": 26,
@@ -65,7 +78,14 @@ def predict():
             'screen_time': float(data['screen_time']),
             'stress_level': float(data['stress_level']),
             'physical_activity': float(data['physical_activity']),
-            'number_of_courses': int(data['number_of_courses'])
+            'number_of_courses': int(data['number_of_courses']),
+            'sleep_hours': float(data['sleep_hours']),
+            'sleep_quality': float(data['sleep_quality']),
+            'anxiety_score': float(data['anxiety_score']),
+            'depression_score': float(data['depression_score']),
+            'coping_strategy_score': float(data['coping_strategy_score']),
+            'social_support_score': float(data['social_support_score']),
+            'academic_self_efficacy': float(data['academic_self_efficacy'])
         }
         
         if pipeline:
@@ -120,36 +140,52 @@ def get_mbi_category(mbi_score):
 
 def calculate_mbi_fallback(features):
     """Fallback MBI score calculation if model isn't available"""
-    study_hours, screen_time, stress_level, physical_activity, number_of_courses = features
+    (study_hours, screen_time, stress_level, physical_activity, number_of_courses,
+     sleep_hours, sleep_quality, anxiety_score, depression_score, 
+     coping_strategy_score, social_support_score, academic_self_efficacy) = features
     
     # Calculate weighted contribution to burnout (0-54 scale)
-    # Stress is the primary contributor in MBI
-    stress_contribution = (stress_level / 10.0) * 22  # Max 22 points from stress
+    # Mental health is the primary contributor
+    stress_contribution = (stress_level / 10.0) * 12  # Max 12 points from stress
+    anxiety_contribution = (anxiety_score / 10.0) * 8  # Max 8 points from anxiety
+    depression_contribution = (depression_score / 10.0) * 8  # Max 8 points from depression
     
-    # Study hours and screen time contribute to exhaustion
-    study_contribution = min(study_hours / 16.0, 1.0) * 10  # Max 10 points
-    screen_contribution = min(screen_time / 16.0, 1.0) * 8   # Max 8 points
+    # Academic factors
+    study_contribution = min(study_hours / 16.0, 1.0) * 6  # Max 6 points
+    screen_contribution = min(screen_time / 16.0, 1.0) * 4  # Max 4 points
+    courses_contribution = min(number_of_courses / 10.0, 1.0) * 4  # Max 4 points
+    efficacy_penalty = (1.0 - academic_self_efficacy / 10.0) * 4  # Max 4 points for low efficacy
     
-    # Course load adds to overwhelm
-    courses_contribution = min(number_of_courses / 10.0, 1.0) * 6  # Max 6 points
-    
-    # Physical activity reduces burnout
-    activity_reduction = min(physical_activity / 8.0, 1.0) * 8  # Max 8 point reduction
+    # Sleep quality impact (poor sleep increases burnout)
+    sleep_penalty = 0
+    if sleep_hours < 6:
+        sleep_penalty += 3
+    elif sleep_hours < 7:
+        sleep_penalty += 1
+    sleep_penalty += (1.0 - sleep_quality / 4.0) * 3  # Max 3 points for poor sleep quality
     
     # Calculate base score
-    base_score = (stress_contribution + study_contribution + 
-                  screen_contribution + courses_contribution)
+    base_score = (stress_contribution + anxiety_contribution + depression_contribution +
+                  study_contribution + screen_contribution + courses_contribution +
+                  efficacy_penalty + sleep_penalty)
     
-    # Apply activity reduction
-    final_score = max(0, base_score - activity_reduction)
+    # Protective factors reduce burnout
+    activity_reduction = min(physical_activity / 8.0, 1.0) * 6  # Max 6 point reduction
+    coping_reduction = (coping_strategy_score / 10.0) * 4  # Max 4 point reduction
+    support_reduction = (social_support_score / 10.0) * 5  # Max 5 point reduction
+    
+    total_reduction = activity_reduction + coping_reduction + support_reduction
+    final_score = max(0, base_score - total_reduction)
     
     # Add bonuses for extreme conditions
-    if stress_level >= 9:
-        final_score += 5
-    if study_hours >= 12:
-        final_score += 3
-    if physical_activity <= 0.5:
+    if anxiety_score >= 8 or depression_score >= 8:
         final_score += 4
+    if stress_level >= 9:
+        final_score += 3
+    if sleep_hours < 5:
+        final_score += 3
+    if social_support_score <= 3:
+        final_score += 2
     
     # Clip to valid MBI range
     return float(np.clip(final_score, 0, 54))
@@ -176,73 +212,143 @@ def interpret_mbi_risk(mbi_score, category):
         }
 
 def generate_suggestions(data, mbi_score, mbi_category):
-    """Generate personalized suggestions using Gemini AI based on MBI assessment"""
+    """Generate personalized suggestions using Gemini AI ensuring consistent count."""
+    TARGET_COUNT = 5
     if not gemini_model:
-        return get_fallback_suggestions(data, mbi_score, mbi_category)
-    
+        # Fallback already can return up to 5; slice to target
+        return get_fallback_suggestions(data, mbi_score, mbi_category)[:TARGET_COUNT]
+
     try:
         prompt = f"""
-        A student has submitted their lifestyle data for burnout assessment using the Maslach Burnout Inventory for Students (MBI-SS). Please analyze this data and provide personalized recommendations:
 
-        STUDENT PROFILE:
-        - Study hours per day: {data['study_hours']} hours
-        - Screen time per day: {data['screen_time']} hours  
-        - Stress level: {data['stress_level']}/10
-        - Physical activity per day: {data['physical_activity']} hours
-        - Number of courses: {data['number_of_courses']} courses
-        
-        MBI BURNOUT ASSESSMENT RESULT:
-        - MBI Score: {mbi_score:.1f} out of 54
-        - Risk Category: {mbi_category}
-        - MBI Thresholds: Low (0-16), Moderate (17-26), High (27-54)
-        
-        Based on this student's specific data and their MBI score of {mbi_score:.1f}/54 ({mbi_category}), please provide 3-4 specific, actionable suggestions to help them improve their wellbeing and reduce burnout risk. Focus on the areas that need the most attention based on their input values and MBI risk level. Keep each suggestion practical and concise (1-2 sentences).
-        """
-        
+Provide EXACTLY {TARGET_COUNT} numbered, highly personalized, evidence-based recommendations to reduce student burnout risk.
+Number them 1–{TARGET_COUNT}. Do not include any introductory or closing sentences.
+
+FORMAT REQUIREMENTS:
+Each recommendation must be 2–3 sentences and follow this structure:
+1) A specific action the student can take.
+2) A direct explanation referencing their exact values (e.g., “because you sleep 5h…”, “because your stress is 7/10…”).
+3) A brief outcome or benefit (“which can improve…”, “which reduces…”).
+
+AVOID generic advice. Every recommendation must tie directly to the user’s values.
+
+USER DATA:
+MBI Score: {mbi_score:.1f} / 54 ({mbi_category})
+Study hours: {data['study_hours']}
+Screen time: {data['screen_time']}
+Courses: {data['number_of_courses']}
+Sleep: {data['sleep_hours']}h, quality {data['sleep_quality']}/4
+Stress: {data['stress_level']}/10
+Anxiety: {data['anxiety_score']}/10
+Depression: {data['depression_score']}/10
+Physical activity: {data['physical_activity']}h/week
+Coping strategies: {data['coping_strategy_score']}/10
+Social support: {data['social_support_score']}/10
+Academic self-efficacy: {data['academic_self_efficacy']}/10
+
+PERSONALIZATION REQUIREMENTS:
+- If sleep hours < 7 or sleep quality ≤ 2, include a recommendation referencing BOTH sleep hours and sleep quality.
+- If stress/anxiety/depression ≥ 6, include a recommendation targeting mental-health regulation referencing all elevated scores.
+- If coping_strategy_score ≤ 4, explain why this creates vulnerability and suggest specific coping improvements.
+- If social_support_score ≤ 5, recommend increasing support, referencing the user’s score directly.
+- If screen_time > 6h or study_hours > 6h, include a recommendation about workload or screen boundaries, citing the exact hours.
+- If academic_self_efficacy ≤ 6, include a recommendation that strengthens planning or confidence.
+
+GOAL:
+Provide practical, personalized, and realistic micro-interventions that clearly connect user data → specific cause → recommended action → expected benefit.
+
+
+"""
+
         response = gemini_model.generate_content(prompt)
-        suggestions_text = response.text
-        
-        # Parse the response into individual suggestions
-        suggestions = [s.strip() for s in suggestions_text.split('\n') if s.strip() and not s.strip().startswith('#')]
-        
-        return suggestions[:4]  # Limit to 4 suggestions
-        
+        suggestions_text = response.text or ""
+
+        raw_lines = [l.strip() for l in suggestions_text.split('\n') if l.strip()]
+        cleaned = []
+        for line in raw_lines:
+            # Skip meta/header lines that sometimes appear
+            lower = line.lower()
+            if any(kw in lower for kw in ["intro", "recommendations", "burnout risk", "here are"]):
+                continue
+            # Strip leading numbering / bullets
+            line = line.lstrip('-* ').strip()
+            if line[:2].isdigit():
+                # Remove leading number patterns like '1.' or '1)'
+                line = line.split('.', 1)[-1] if '.' in line[:4] else line
+                line = line.split(')', 1)[-1] if ')' in line[:4] else line
+            cleaned.append(line.strip())
+
+        # Deduplicate while preserving order
+        seen = set()
+        unique = []
+        for c in cleaned:
+            if c not in seen:
+                seen.add(c)
+                unique.append(c)
+
+        # Enforce target count; if short, supplement with fallback
+        if len(unique) < TARGET_COUNT:
+            fallback = get_fallback_suggestions(data, mbi_score, mbi_category)
+            for f in fallback:
+                if f not in seen:
+                    unique.append(f)
+                if len(unique) == TARGET_COUNT:
+                    break
+
+        return unique[:TARGET_COUNT]
+
     except Exception as e:
         print(f"Error generating AI suggestions: {e}")
-        return get_fallback_suggestions(data, mbi_score, mbi_category)
+        return get_fallback_suggestions(data, mbi_score, mbi_category)[:TARGET_COUNT]
 
 def get_fallback_suggestions(data, mbi_score, mbi_category):
     """Fallback suggestions if AI is not available"""
     suggestions = []
     
-    # High priority suggestions based on MBI category
+    # High priority mental health suggestions
     if mbi_category == "High Risk":
         suggestions.append("⚠️ Your MBI score indicates high burnout risk. Consider speaking with a counselor or mental health professional.")
     
-    # Specific suggestions based on input values
-    if float(data['stress_level']) > 7:
-        suggestions.append("🧘 Your stress level is very high. Practice daily stress management: try meditation, deep breathing, or yoga for 10-15 minutes.")
+    if float(data.get('anxiety_score', 0)) >= 7 or float(data.get('depression_score', 0)) >= 7:
+        suggestions.append("🧠 Your anxiety/depression scores are elevated. Please reach out to campus mental health services or a trusted counselor.")
     
-    if float(data['study_hours']) > 10:
-        suggestions.append("📚 Reduce study hours and focus on quality over quantity. Use the Pomodoro technique: 25 min study, 5 min break.")
+    # Sleep-related suggestions
+    if float(data.get('sleep_hours', 7)) < 6 or float(data.get('sleep_quality', 3)) <= 2:
+        suggestions.append("💤 Prioritize sleep: aim for 7-9 hours nightly with good sleep hygiene (dark room, no screens before bed, consistent schedule).")
     
-    if float(data['screen_time']) > 8:
-        suggestions.append("📱 Limit screen time by taking regular breaks (20-20-20 rule: every 20 min, look 20 feet away for 20 seconds).")
+    # Stress management
+    if float(data.get('stress_level', 5)) > 7:
+        suggestions.append("🧘 Your stress level is very high. Practice daily stress management: meditation, deep breathing, or yoga for 10-15 minutes.")
     
-    if float(data['physical_activity']) < 1:
-        suggestions.append("🏃 Increase physical activity to at least 30 minutes daily - even a brisk walk can reduce burnout symptoms significantly.")
+    # Academic workload
+    if float(data.get('study_hours', 0)) > 10 or int(data.get('number_of_courses', 0)) > 6:
+        suggestions.append("📚 Reduce academic overload: use the Pomodoro technique (25 min study, 5 min break) and consider dropping a course if possible.")
     
-    if int(data['number_of_courses']) > 6:
-        suggestions.append("📖 Consider reducing your course load next semester to achieve better balance and prevent burnout.")
+    # Social support
+    if float(data.get('social_support_score', 5)) <= 4:
+        suggestions.append("🤝 Build your support network: connect with friends, join study groups, or reach out to family regularly.")
     
-    # Add general wellness tip if fewer than 3 suggestions
-    if len(suggestions) < 3:
-        if mbi_category == "Low Risk":
-            suggestions.append("✅ Great job maintaining balance! Continue your healthy habits and check in regularly with yourself.")
-        else:
-            suggestions.append("💤 Prioritize sleep (7-9 hours nightly) and establish a consistent bedtime routine for better recovery.")
+    # Physical health
+    if float(data.get('physical_activity', 0)) < 3:
+        suggestions.append("🏃 Increase physical activity to at least 30 minutes daily - exercise significantly reduces burnout symptoms.")
     
-    return suggestions[:4]  # Limit to 4 suggestions
+    # Coping strategies
+    if float(data.get('coping_strategy_score', 5)) <= 4:
+        suggestions.append("🛠️ Develop healthy coping strategies: time management, mindfulness, hobbies, and avoiding procrastination.")
+    
+    # Academic self-efficacy
+    if float(data.get('academic_self_efficacy', 5)) <= 4:
+        suggestions.append("📖 Build academic confidence: seek tutoring, form study groups, break tasks into smaller steps, and celebrate small wins.")
+    
+    # Screen time
+    if float(data.get('screen_time', 0)) > 8:
+        suggestions.append("📱 Limit screen time: take breaks every 20 minutes (20-20-20 rule) and set boundaries for recreational use.")
+    
+    # Positive reinforcement for low risk
+    if len(suggestions) < 3 and mbi_category == "Low Risk":
+        suggestions.append("✅ Great job maintaining balance! Continue your healthy habits and check in regularly with yourself.")
+    
+    return suggestions[:5]  # Limit to 5 suggestions
 
 if __name__ == '__main__':
     app.run(debug=True)
