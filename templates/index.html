@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 25%, #7fcdcd 50%, #81c3d7 75%, #a8c8ec 100%);
             background-attachment: fixed;
             min-height: 100vh;
             margin: 0;
@@ -29,9 +29,9 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(135, 206, 235, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(173, 216, 230, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(176, 224, 230, 0.15) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
         }
@@ -63,7 +63,7 @@
             font-weight: 600;
             color: #1e293b;
             margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -98,7 +98,7 @@
         }
 
         .input-section h2 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -144,25 +144,25 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #667eea;
+            background: #4682b4;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 6px rgba(70, 130, 180, 0.4);
             transition: all 0.3s ease;
         }
 
         .form-group input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.2);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 4px 12px rgba(70, 130, 180, 0.6);
         }
 
         .form-group input[type="range"]::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #667eea;
+            background: #4682b4;
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 6px rgba(70, 130, 180, 0.4);
         }
 
 
@@ -176,19 +176,19 @@
             position: absolute;
             right: 0;
             top: -8px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(70, 130, 180, 0.3);
         }
 
         .btn {
             width: 100%;
             padding: 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
             color: white;
             border: none;
             border-radius: 15px;
@@ -196,24 +196,24 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(70, 130, 180, 0.4);
             margin-top: 20px;
         }
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 8px 25px rgba(70, 130, 180, 0.6);
         }
 
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 15px rgba(70, 130, 180, 0.2);
         }
 
         .results-section h2 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -252,12 +252,12 @@
         }
 
         .stat-item {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(70, 130, 180, 0.1) 0%, rgba(95, 158, 160, 0.1) 100%);
             backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: 15px;
             text-align: center;
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(70, 130, 180, 0.2);
             transition: transform 0.3s ease;
         }
 
@@ -268,7 +268,7 @@
         .stat-value {
             font-size: 1.8rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -287,7 +287,7 @@
         }
 
         .suggestions-section h2 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4682b4 0%, #5f9ea0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -297,19 +297,19 @@
         }
 
         .suggestion {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(70, 130, 180, 0.1) 0%, rgba(95, 158, 160, 0.1) 100%);
             backdrop-filter: blur(10px);
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #4682b4;
             padding: 18px;
             margin-bottom: 15px;
             border-radius: 0 15px 15px 0;
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(70, 130, 180, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .suggestion:hover {
             transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 15px rgba(70, 130, 180, 0.2);
         }
 
         .loading {
@@ -430,7 +430,7 @@
                 const max = parseFloat(input.max);
                 const percentage = ((value - min) / (max - min)) * 100;
                 
-                input.style.background = `linear-gradient(to right, #667eea 0%, #764ba2 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`;
+                input.style.background = `linear-gradient(to right, #4682b4 0%, #5f9ea0 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`;
                 valueSpan.textContent = input.step === '1' ? value.toString() : value.toFixed(1);
             }
             
