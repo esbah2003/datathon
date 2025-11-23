@@ -6,7 +6,9 @@ import numpy as np
 
 
 here = Path(__file__).parent
-model_path = here / "model.joblib"
+model_path = here / "../model/model.joblib"
+model_path = model_path.resolve()
+
 
 if not model_path.exists():
     raise SystemExit("Model file not found. Run main.py to train and save the model first.")
