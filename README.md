@@ -19,6 +19,8 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 ### 3. Install Requirements
+**If you get any errors with the requirements installation, ensure you are using Python 3.11**
+
 ```bash
 pip install -r requirements.txt
 ```
