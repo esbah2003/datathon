@@ -2,6 +2,9 @@
 
 A machine learning powered app that predicts student burnout risk based on lifestyle and academic factors.
 
+[![Watch the video](https://youtu.be/2PtKUQXIBdM)
+
+
 ## Quick Start
 
 ### 1. (Optional) Add API Key
