@@ -1,4 +1,4 @@
-# StressScope - Student Burnout Prediction App
+# MindGauge - Student Burnout Prediction App
 
 A machine learning powered app that predicts student burnout risk based on lifestyle and academic factors.
 
